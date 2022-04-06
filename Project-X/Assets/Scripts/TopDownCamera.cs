@@ -25,7 +25,7 @@ public class TopDownCamera : MonoBehaviour
     {
         if (!target) 
         {
-            //if camera doesn't find player, return from condition 
+            //if camera doesn't find player, return back 
             return;
         }
 
@@ -38,7 +38,7 @@ public class TopDownCamera : MonoBehaviour
         Vector3 rotatedVector = Quaternion.AngleAxis(cameraAngle, Vector3.up) * worldPosition;
         Debug.DrawLine(target.position, rotatedVector, Color.yellow);
 
-		//Move our camera position
+		//Move camera position
 
 		Vector3 flatTargetPosition = target.position;
 		flatTargetPosition.y = 0.0f;
@@ -46,6 +46,7 @@ public class TopDownCamera : MonoBehaviour
 
 		Debug.DrawLine(target.position, finalPosition, Color.green);
 
+        //smoothing the camera rotation 
         transform.position = Vector3.SmoothDamp(transform.position, finalPosition,ref refVelocity, smoothSpeed);
         transform.LookAt(target.position);
 

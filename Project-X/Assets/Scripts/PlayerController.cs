@@ -9,10 +9,12 @@ public class PlayerController : MonoBehaviour
     public Animator anim;
     public bool isGrounded;
     public LayerMask layerMask;
+	[SerializeField] private float mouseSensitivity;
     // Start is called before the first frame update
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
+		mouseSensitivity = 400;
     }
 
     // Update is called once per frame
@@ -50,7 +52,7 @@ public class PlayerController : MonoBehaviour
 
 	private void AimTowardMouse()
     {
-		float mouseX = Input.GetAxis("Mouse X") * 150 * Time.deltaTime;
+		float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
 		transform.Rotate(Vector3.up, mouseX);
 	}
 
@@ -81,6 +83,7 @@ public class PlayerController : MonoBehaviour
 
 	protected void Move() 
 	{
+		AimTowardMouse();
 		float verticalAxis = Input.GetAxis("Vertical");
 		float horizontalAxis = Input.GetAxis("Horizontal");
 
