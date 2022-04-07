@@ -6,10 +6,11 @@ public class PlayerController : MonoBehaviour
    // [SerializeField] private float playerSpeed = 2.0f;
 
     private Rigidbody playerRb;
-    public Animator anim;
-    public bool isGrounded;
-    public LayerMask layerMask;
+    [SerializeField] private Animator anim;
+    [SerializeField] private bool isGrounded;
+    [SerializeField] private LayerMask layerMask;
 	[SerializeField] private float mouseSensitivity;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -49,21 +50,7 @@ public class PlayerController : MonoBehaviour
 	//        playerRb.AddForce(Vector3.right * Time.deltaTime * playerSpeed, ForceMode.Impulse);
 	//    }
 	//}
-
-	private void AimTowardMouse()
-    {
-		float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-		transform.Rotate(Vector3.up, mouseX);
-	}
-
-	protected void Jump() 
-	{
-		if (Input.GetKey(KeyCode.Space) && isGrounded) 
-		{
-			playerRb.AddForce(Vector3.up * 2, ForceMode.Impulse);
-		}
-	}
-
+	
 	protected void Grounded()
 	{
 		if (Physics.CheckSphere(transform.position + Vector3.down, 0.2f, layerMask))
@@ -95,4 +82,18 @@ public class PlayerController : MonoBehaviour
 		anim.SetFloat("vertical", verticalAxis);
 		anim.SetFloat("horizontal",horizontalAxis);
 	}
+	private void AimTowardMouse()
+	{
+		float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+		transform.Rotate(Vector3.up, mouseX);
+	}
+	protected void Jump()
+	{
+		if (Input.GetKey(KeyCode.Space) && isGrounded)
+		{
+			playerRb.AddForce(Vector3.up * 2, ForceMode.Impulse);
+		}
+	}
+
+
 }
