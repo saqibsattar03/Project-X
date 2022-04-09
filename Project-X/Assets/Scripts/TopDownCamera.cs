@@ -31,12 +31,10 @@ public class TopDownCamera : MonoBehaviour
 
         // Build World position vector
         Vector3 worldPosition = (Vector3.forward * -cameraDistance) + (Vector3.up * cameraHeight);
-        Debug.DrawLine(target.position,worldPosition, Color.red);
 
         //Build rotated angle
 
         Vector3 rotatedVector = Quaternion.AngleAxis(cameraAngle, Vector3.up) * worldPosition;
-        Debug.DrawLine(target.position, rotatedVector, Color.yellow);
 
 		//Move camera position
 
@@ -44,7 +42,6 @@ public class TopDownCamera : MonoBehaviour
 		flatTargetPosition.y = 0.0f;
 		Vector3 finalPosition = flatTargetPosition + rotatedVector;
 
-		Debug.DrawLine(target.position, finalPosition, Color.green);
 
         //smoothing the camera rotation 
         transform.position = Vector3.SmoothDamp(transform.position, finalPosition,ref refVelocity, smoothSpeed);

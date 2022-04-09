@@ -1,56 +1,43 @@
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : Character
 {
 
    // [SerializeField] private float playerSpeed = 2.0f;
 
     private Rigidbody playerRb;
-    [SerializeField] private Animator anim;
+	private bool isRunning;  
+
+
+	[SerializeField] private Animator anim;
     [SerializeField] private bool isGrounded;
     [SerializeField] private LayerMask layerMask;
 	[SerializeField] private float mouseSensitivity;
+	[SerializeField] float attackRate = 2f;
+	[SerializeField] float nextAttackTime = 0f;
+	[SerializeField] float normalSpeed = 0.04f;
+	[SerializeField] float runningSpeed = 0.04f;
+	public float demo;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        playerRb = GetComponent<Rigidbody>();
+
+	// Start is called before the first frame update
+	void Start()
+	{
+		InstantiateCharacter(100, 10, 2);
+		playerRb = GetComponent<Rigidbody>();
 		mouseSensitivity = 400;
-    }
+	}
 
-    // Update is called once per frame
+	//Update is called once per frame
 	private void Update()
 	{
 		Grounded();
 		Jump();
-		Move();
+		PlayerMovement();
+		PlayerAtatck();
+		Debug.Log(Time.time);
 	}
 
-	//protected void PlayerMovement() 
-	//{
-	//    if (Input.GetKey(KeyCode.W))
-	//    {
-	//        Debug.Log("w pressed");
-	//        playerRb.AddForce(Vector3.forward * Time.deltaTime * playerSpeed, ForceMode.Impulse);
-	//    }
-	//    else if (Input.GetKey(KeyCode.S))
-	//    {
-	//        Debug.Log("s pressed");
-	//        playerRb.AddForce(Vector3.back * Time.deltaTime * playerSpeed, ForceMode.Impulse);
-	//    }
-
-	//    else if (Input.GetKey(KeyCode.A))
-	//    {
-	//        Debug.Log("a pressed");
-	//        playerRb.AddForce(Vector3.left * Time.deltaTime * playerSpeed, ForceMode.Impulse);
-	//    }
-	//    else if (Input.GetKey(KeyCode.D))
-	//    {
-	//        Debug.Log("d pressed");
-	//        playerRb.AddForce(Vector3.right * Time.deltaTime * playerSpeed, ForceMode.Impulse);
-	//    }
-	//}
-	
 	protected void Grounded()
 	{
 		if (Physics.CheckSphere(transform.position + Vector3.down, 0.2f, layerMask))
@@ -68,7 +55,7 @@ public class PlayerController : MonoBehaviour
 		anim.SetBool("jump", !isGrounded);
 	}
 
-	protected void Move() 
+	protected void PlayerMovement() 
 	{
 		AimTowardMouse();
 		float verticalAxis = Input.GetAxis("Vertical");
@@ -77,23 +64,66 @@ public class PlayerController : MonoBehaviour
 		Vector3 movement = transform.forward * verticalAxis + transform.right * horizontalAxis;
 		movement.Normalize();
 
-		transform.position += movement * 0.04f;
-
-		anim.SetFloat("vertical", verticalAxis);
-		anim.SetFloat("horizontal",horizontalAxis);
+		transform.position += movement * Speed(); 
+		Debug.Log(transform.position += movement * Speed());
+		if (isRunning)
+		{
+			anim.SetTrigger("isRunning");
+		}
+		else 
+		{
+			anim.SetFloat("vertical", verticalAxis, 0.1f, Time.deltaTime);
+			anim.SetFloat("horizontal", horizontalAxis, 0.1f, Time.deltaTime);
+		}
 	}
-	private void AimTowardMouse()
+
+	protected void AimTowardMouse()
 	{
 		float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
 		transform.Rotate(Vector3.up, mouseX);
+	}
+
+	protected void PlayerAtatck()
+	{
+		// avoid spamming attack
+
+		if (Time.time >= nextAttackTime)
+		{
+			if (Input.GetMouseButton(0))
+			{
+				anim.SetTrigger("attack");
+				//Light Attack
+				Attack(this.damage, enemyLayers);
+				nextAttackTime = Time.time + 1f / attackRate;
+			}
+			if (Input.GetMouseButton(1))
+			{
+				//Heavy Attack
+				Attack(this.damage * this.doubleDamage, enemyLayers);
+				nextAttackTime = Time.time + 1f / attackRate;
+			}
+		}
 	}
 	protected void Jump()
 	{
 		if (Input.GetKey(KeyCode.Space) && isGrounded)
 		{
+			anim.SetBool("jump", true);
 			playerRb.AddForce(Vector3.up * 2, ForceMode.Impulse);
+
 		}
 	}
-
-
+	protected float Speed() 
+	{
+		if (Input.GetKey(KeyCode.Q))
+		{
+			isRunning = true;
+			return normalSpeed;
+		}
+		else
+		{
+			isRunning = false;
+			return normalSpeed;
+		}
+	}
 }
