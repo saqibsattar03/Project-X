@@ -13,17 +13,16 @@ public class PlayerController : Character
     [SerializeField] private bool isGrounded;
     [SerializeField] private LayerMask layerMask;
 	[SerializeField] private float mouseSensitivity;
-	[SerializeField] float attackRate = 2f;
-	[SerializeField] float nextAttackTime = 0f;
-	[SerializeField] float normalSpeed = 0.04f;
-	[SerializeField] float runningSpeed = 0.04f;
-	public float demo;
+	[SerializeField] private float attackRate = 2f;
+	[SerializeField] private float nextAttackTime = 0f;
+	[SerializeField] private float normalSpeed = 0.04f;
+	[SerializeField] private float runningSpeed = 0.04f;
 
 
 	// Start is called before the first frame update
 	void Start()
 	{
-		InstantiateCharacter(100, 10, 2);
+		InstantiateCharacter(10, 10, 2);
 		playerRb = GetComponent<Rigidbody>();
 		mouseSensitivity = 400;
 	}
@@ -35,7 +34,6 @@ public class PlayerController : Character
 		Jump();
 		PlayerMovement();
 		PlayerAtatck();
-		Debug.Log(Time.time);
 	}
 
 	protected void Grounded()
@@ -65,7 +63,7 @@ public class PlayerController : Character
 		movement.Normalize();
 
 		transform.position += movement * Speed(); 
-		Debug.Log(transform.position += movement * Speed());
+		//Debug.Log(transform.position += movement * Speed());
 		if (isRunning)
 		{
 			anim.SetTrigger("isRunning");
@@ -91,15 +89,18 @@ public class PlayerController : Character
 		{
 			if (Input.GetMouseButton(0))
 			{
-				anim.SetTrigger("attack");
+				Debug.Log("here in light attack");
 				//Light Attack
-				Attack(this.damage, enemyLayers);
+				//anim.SetTrigger("l_attack");
+				Attack("l_attack", 0, 0.25f, attackPoint, enemyLayers, this.damage,0, "Sword Swing", "Enemy Impact", "Enemy Scream");
 				nextAttackTime = Time.time + 1f / attackRate;
 			}
 			if (Input.GetMouseButton(1))
 			{
+				Debug.Log("here in heavy attack");
 				//Heavy Attack
-				Attack(this.damage * this.doubleDamage, enemyLayers);
+				//anim.SetTrigger("h_attack");
+				Attack("h_attack", 1, 0.4f, attackPoint, enemyLayers, this.damage * this.doubleDamage, 1, "Sword Swing", "Enemy Impact", "Enemy Scream") ;
 				nextAttackTime = Time.time + 1f / attackRate;
 			}
 		}
