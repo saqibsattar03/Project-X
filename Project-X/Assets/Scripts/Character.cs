@@ -4,15 +4,16 @@ using UnityEngine;
 public class Character : MonoBehaviour
 {
 	[SerializeField] private int maxHealth;
-	[SerializeField] private int currnentHealth;
 	[SerializeField] private float attackRange1 = 0.5f;
 
+	public int currnentHealth;
 	public int damage;
 	public int doubleDamage;
 	public LayerMask enemyLayers;
 	public Transform attackPoint;
 	public ParticleSystem[] particleEffects;
 	public Animator animator;
+	public HealthBar healthBar;
 
 	// Characters stats initialization
 	protected void InstantiateCharacter(int maxHealth, int damage, int heavyDamage) 
@@ -21,10 +22,11 @@ public class Character : MonoBehaviour
 		currnentHealth = this.maxHealth;
 		this.damage = damage;
 		this.doubleDamage = heavyDamage;
+		healthBar.SetMaxHealth(this.maxHealth);
 	}
 
 	//Play particle effects for characters
-	public IEnumerator ParticleEffects(int effectsNum, float activationTime)
+	protected IEnumerator ParticleEffects(int effectsNum, float activationTime)
 	{
 		yield return new WaitForSeconds(activationTime);
 		particleEffects[effectsNum].Play();
@@ -43,22 +45,18 @@ public class Character : MonoBehaviour
 		//Play audio
 		AudioManager.instance.Play(attackSoundName);
 
-		Debug.Log(gameObject.layer);
 		// attack functionality goes here
 		Collider[] hitEnemies = Physics.OverlapSphere(attackPoint.position, attackRange1, enemyLayers);
-		//Debug.Log(hitEnemies);
+		
 		foreach (var enemy in hitEnemies) 
 		{
-			Debug.Log(enemy.name);
 			enemy.GetComponent<Character>().GetDamage(damage, bloodParticleEffect, enemy.transform.position + new Vector3(0, 1.5f, 0), hitSoundName, screamSoundName);
 		}
 		
 	}
-	public void GetDamage(int damage, int bloodParticleEfffect, Vector3 transform, string hitSoundName, string screamSoundName)
+	protected void GetDamage(int damage, int bloodParticleEfffect, Vector3 transform, string hitSoundName, string screamSoundName)
 	{
-		//Animation
-		//animator.SetTrigger("Hurt");
-
+	
 		//Audio
 		AudioManager.instance.Play(hitSoundName);
 		AudioManager.instance.Play(screamSoundName);
@@ -67,8 +65,8 @@ public class Character : MonoBehaviour
 		Instantiate(particleEffects[bloodParticleEfffect], transform, Quaternion.identity).Play();
 
 		currnentHealth -= damage;
-		Debug.Log(gameObject.name + "health" + currnentHealth);
-		if (currnentHealth < 0) 
+		healthBar.SetHealth(currnentHealth);
+		if (currnentHealth <= 0) 
 		{
 			Die();
 		}
@@ -77,6 +75,7 @@ public class Character : MonoBehaviour
 	protected void Die() 
 	{
 		//Death functionality goes here
+		animator.SetBool("is_dead", true);
 		GetComponent<Collider>().enabled = false;
 		this.enabled = false;
 		Destroy(this.gameObject, 2);

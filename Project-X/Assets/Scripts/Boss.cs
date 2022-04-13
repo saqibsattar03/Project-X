@@ -7,18 +7,19 @@ public class Boss : Character
 
     public Transform player;
 
-    public LayerMask whatIsGround, whatIsPlayer;
+    [SerializeField] private LayerMask whatIsGround, whatIsPlayer;
     [SerializeField] private Animator anim;
+	[SerializeField] private float attackRate = 2f;
+	[SerializeField] private float nextAttackTime = 0.5f;
 
 
-    //Patroling
-    public Vector3 walkPoint;
+	//Patroling
+	public Vector3 walkPoint;
     bool walkPointSet;
     public float walkPointRange;
 
 	//Attacking
 	public float timeBetweenAttacks;
-	bool alreadyAttacked;
 
 	//States
 	public float sightRange, attackRange;
@@ -33,7 +34,7 @@ public class Boss : Character
     // Start is called before the first frame update
     void Start()
     {
-        InstantiateCharacter(20, 5, 8);
+        InstantiateCharacter(150, 5, 2);
     }
 
     // Update is called once per frame
@@ -89,21 +90,12 @@ public class Boss : Character
 
 		transform.LookAt(player);
 
-		if (!alreadyAttacked)
+		if (Time.time >= nextAttackTime)
 		{
-			///Attack code goes here
-			//Attack(this.damage, enemyLayers);
-			//anim.SetTrigger("attack");
-			///End of attack code
-
-			alreadyAttacked = true;
-            InvokeRepeating("ResetAttack",timeBetweenAttacks,0);
-			//Invoke(nameof(ResetAttack), timeBetweenAttacks);
+			Attack("attack", 2, 0.25f, attackPoint, enemyLayers, this.damage, 0, "Sword Swing", "Player Impact", "Player Scream");
+			nextAttackTime = Time.time + 1f / attackRate;
 		}
-	}
-	private void ResetAttack()
-	{
-		alreadyAttacked = false;
+
 	}
 
 	private void OnDrawGizmosSelected()

@@ -9,6 +9,8 @@ public class Enemy : Character
 
     public LayerMask whatIsGround, whatIsPlayer;
     [SerializeField] private Animator anim;
+    [SerializeField] private float attackRate = 2f;
+    [SerializeField] private float nextAttackTime = 1f;
 
 
     //Patroling
@@ -32,7 +34,7 @@ public class Enemy : Character
 	// Start is called before the first frame update
 	void Start()
     {
-        InstantiateCharacter(20,2,5);
+        InstantiateCharacter(100,1,1);
     }
 
     // Update is called once per frame
@@ -81,28 +83,20 @@ public class Enemy : Character
         agent.SetDestination(player.position);
     }
 
-	private void AttackPlayer()
-	{
-		//Make sure enemy doesn't move
-		agent.SetDestination(transform.position);
+    private void AttackPlayer()
+    {
+        //Make sure enemy doesn't move
+        agent.SetDestination(transform.position);
 
-		transform.LookAt(player);
+        transform.LookAt(player);
 
-		if (!alreadyAttacked)
-		{
-            ///Attack code goes here
+        if (Time.time >= nextAttackTime)
+        {
             Attack("attack", 2, 0.25f, attackPoint, enemyLayers, this.damage, 0, "Sword Swing", "Player Impact", "Player Scream");
-            //anim.SetTrigger("attack");
-			///End of attack code
+            nextAttackTime = Time.time + 1f / attackRate;
+        }
 
-			alreadyAttacked = true;
-			Invoke(nameof(ResetAttack), timeBetweenAttacks);
-		}
-	}
-	private void ResetAttack()
-	{
-		alreadyAttacked = false;
-	}
+    }
 
 	private void OnDrawGizmosSelected()
     {

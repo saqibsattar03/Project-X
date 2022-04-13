@@ -15,25 +15,26 @@ public class PlayerController : Character
 	[SerializeField] private float mouseSensitivity;
 	[SerializeField] private float attackRate = 2f;
 	[SerializeField] private float nextAttackTime = 0f;
-	[SerializeField] private float normalSpeed = 0.04f;
+	[SerializeField] private float normalSpeed = 0.2f;
 	[SerializeField] private float runningSpeed = 0.04f;
 
 
 	// Start is called before the first frame update
 	void Start()
 	{
-		InstantiateCharacter(10, 10, 2);
+		InstantiateCharacter(100,100, 2);
 		playerRb = GetComponent<Rigidbody>();
 		mouseSensitivity = 400;
 	}
 
 	//Update is called once per frame
-	private void Update()
+	void Update()
 	{
 		Grounded();
 		Jump();
 		PlayerMovement();
 		PlayerAtatck();
+		PauseGame();
 	}
 
 	protected void Grounded()
@@ -89,17 +90,15 @@ public class PlayerController : Character
 		{
 			if (Input.GetMouseButton(0))
 			{
-				Debug.Log("here in light attack");
 				//Light Attack
-				//anim.SetTrigger("l_attack");
+				;
 				Attack("l_attack", 0, 0.25f, attackPoint, enemyLayers, this.damage,0, "Sword Swing", "Enemy Impact", "Enemy Scream");
 				nextAttackTime = Time.time + 1f / attackRate;
 			}
 			if (Input.GetMouseButton(1))
 			{
-				Debug.Log("here in heavy attack");
 				//Heavy Attack
-				//anim.SetTrigger("h_attack");
+				
 				Attack("h_attack", 1, 0.4f, attackPoint, enemyLayers, this.damage * this.doubleDamage, 1, "Sword Swing", "Enemy Impact", "Enemy Scream") ;
 				nextAttackTime = Time.time + 1f / attackRate;
 			}
@@ -125,6 +124,23 @@ public class PlayerController : Character
 		{
 			isRunning = false;
 			return normalSpeed;
+		}
+	}
+
+	protected void PauseGame() 
+	{
+		if (Input.GetKey(KeyCode.Escape)) 
+		{
+			GameManager.instance.PauseGame();
+		}
+	}
+
+	protected void OnCollisionEnter(Collision collision)
+	{
+		if (collision.gameObject.tag == "box")
+		{
+			GameManager.instance.chestPrefab.SetActive(false);
+			GameManager.instance.winnerPanel.SetActive(true);
 		}
 	}
 }
