@@ -56,17 +56,35 @@ public class PlayerController : Character
 
 	protected void PlayerMovement() 
 	{
-		AimTowardMouse();
 		float verticalAxis = Input.GetAxis("Vertical");
 		float horizontalAxis = Input.GetAxis("Horizontal");
+		Debug.Log("veritcal axis" + verticalAxis);
+		Debug.Log("horizontal axis" + horizontalAxis);
 
-		Vector3 movement = transform.forward * verticalAxis + transform.right * horizontalAxis;
-		movement.Normalize();
-
-		transform.position += movement * normalSpeed; 
+		Vector3 movementDiection = new Vector3(-horizontalAxis, 0, -verticalAxis);
+		movementDiection.Normalize();
+		if (movementDiection == Vector3.zero) 
+		{
+			return;
+		}
+		Quaternion targetRotation = Quaternion.LookRotation(movementDiection);
+		targetRotation = Quaternion.RotateTowards(transform.rotation,targetRotation, 360 * Time.deltaTime);
+		playerRb.MovePosition(playerRb.position + movementDiection * 2 * Time.deltaTime);
+		playerRb.MoveRotation(targetRotation);
 		anim.SetFloat("vertical", verticalAxis, 0.1f, Time.deltaTime);
 		anim.SetFloat("horizontal", horizontalAxis, 0.1f, Time.deltaTime);
-	
+
+		
+
+
+		//Vector3 movement = transform.forward * verticalAxis + transform.right * horizontalAxis;
+		//movement.Normalize();
+
+		//transform.position += movement * normalSpeed; 
+		//anim.SetFloat("vertical", verticalAxis, 0.1f, Time.deltaTime);
+		//anim.SetFloat("horizontal", horizontalAxis, 0.1f, Time.deltaTime);
+
+
 	}
 
 	protected void AimTowardMouse()
