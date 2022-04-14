@@ -123,13 +123,5 @@ public class GameManager : MonoBehaviour
         Application.Quit();
     }
 
-    public void PlayTheme()
-    {
-        AudioManager.instance.Play("Theme");
-    }
-
-    public void StopTheme()
-    {
-        AudioManager.instance.StopSound("Theme");
-    }
+  
 }
