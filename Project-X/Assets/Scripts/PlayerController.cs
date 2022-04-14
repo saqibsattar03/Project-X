@@ -22,7 +22,7 @@ public class PlayerController : Character
 	// Start is called before the first frame update
 	void Start()
 	{
-		InstantiateCharacter(100,100, 2);
+		InstantiateCharacter(100,5, 2);
 		playerRb = GetComponent<Rigidbody>();
 		mouseSensitivity = 400;
 	}
@@ -30,29 +30,29 @@ public class PlayerController : Character
 	//Update is called once per frame
 	void Update()
 	{
-		Grounded();
-		Jump();
+		//Grounded();
+		//Jump();
 		PlayerMovement();
 		PlayerAtatck();
 		PauseGame();
 	}
 
-	protected void Grounded()
-	{
-		if (Physics.CheckSphere(transform.position + Vector3.down, 0.2f, layerMask))
-		{
+	//protected void Grounded()
+	//{
+	//	if (Physics.CheckSphere(transform.position + Vector3.down, 0.2f, layerMask))
+	//	{
 
-			isGrounded = true;
-			Debug.Log("grounded " + isGrounded);
-		}
-		else 
-		{
-			isGrounded = false;
-			Debug.Log("grounded " + isGrounded);
-		}
+	//		isGrounded = true;
+	//		Debug.Log("grounded " + isGrounded);
+	//	}
+	//	else 
+	//	{
+	//		isGrounded = false;
+	//		Debug.Log("grounded " + isGrounded);
+	//	}
 			
-		anim.SetBool("jump", !isGrounded);
-	}
+	//	anim.SetBool("jump", !isGrounded);
+	//}
 
 	protected void PlayerMovement() 
 	{
@@ -63,17 +63,10 @@ public class PlayerController : Character
 		Vector3 movement = transform.forward * verticalAxis + transform.right * horizontalAxis;
 		movement.Normalize();
 
-		transform.position += movement * Speed(); 
-		//Debug.Log(transform.position += movement * Speed());
-		if (isRunning)
-		{
-			anim.SetTrigger("isRunning");
-		}
-		else 
-		{
-			anim.SetFloat("vertical", verticalAxis, 0.1f, Time.deltaTime);
-			anim.SetFloat("horizontal", horizontalAxis, 0.1f, Time.deltaTime);
-		}
+		transform.position += movement * normalSpeed; 
+		anim.SetFloat("vertical", verticalAxis, 0.1f, Time.deltaTime);
+		anim.SetFloat("horizontal", horizontalAxis, 0.1f, Time.deltaTime);
+	
 	}
 
 	protected void AimTowardMouse()
@@ -104,21 +97,21 @@ public class PlayerController : Character
 			}
 		}
 	}
-	protected void Jump()
-	{
-		if (Input.GetKey(KeyCode.Space) && isGrounded)
-		{
-			anim.SetBool("jump", true);
-			playerRb.AddForce(Vector3.up * 2, ForceMode.Impulse);
+	//protected void Jump()
+	//{
+	//	if (Input.GetKey(KeyCode.Space) && isGrounded)
+	//	{
+	//		anim.SetBool("jump", true);
+	//		playerRb.AddForce(Vector3.up * 2, ForceMode.Impulse);
 
-		}
-	}
+	//	}
+	//}
 	protected float Speed() 
 	{
 		if (Input.GetKey(KeyCode.Q))
 		{
 			isRunning = true;
-			return normalSpeed;
+			return runningSpeed;
 		}
 		else
 		{
